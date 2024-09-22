@@ -3,11 +3,14 @@
     {{ btnText }}
   </button>
   <br/>
-  实时识别结果：{{ resultText }}
+  实时识别结果：
+  <p>{{ resultText }}</p>
+  <record-wave :status="btnStatus"></record-wave>
 </template>
 
 <script setup>
 import {ref} from "vue";
+import RecordWave from './RecordWave.vue'
 import { hex_md5 } from "./md5"
 import { CryptoJSNew } from "./HmacSHA1"
 import '/src/voice-utils/utilJS/crypto-js.js'; //鉴权的引用地址
@@ -15,9 +18,9 @@ import '/src/voice-utils/utilJS/index.umd.js'; // 调用Web Speech API 的依赖
 const btnText = ref("开始录音");
 const btnStatus =  ref("UNDEFINED"); // "UNDEFINED" "CONNECTING" "OPEN" "CLOSING" "CLOSED"
 const recorder = new RecorderManager('/src/voice-utils/dist')
-const APPID = ""; // TODO 你的讯飞模型APPID
-const API_SECRET = ""; // TODO 你的讯飞模型API_SECRET
-const API_KEY = ""; // TODO 你的讯飞模型API_KEY
+const APPID = "34f99a26"; // TODO 你的讯飞模型APPID
+const API_SECRET = "17cc537d2af356f14e9dff09dc8f5b34"; // TODO 你的讯飞模型API_SECRET
+const API_KEY = "17cc537d2af356f14e9dff09dc8f5b34"; // TODO 你的讯飞模型API_KEY
 let iatWS; //监听录音的变量
 let resultText = ref(''); // 识别结果
 let resultTextTemp = ref('');
@@ -75,6 +78,7 @@ function changeStatus(status) {
 }
 // 结果解析函数
 function renderResult(resultData) {
+  console.log("renderResult==>resultData==>",resultData)
   // 识别结束
   let jsonData = JSON.parse(resultData);
     if (jsonData.action == "started") {
@@ -121,6 +125,7 @@ function connectWebSocket() {
         sampleRate: 16000,
         frameSize: 1280,
       });
+      // 
     };
     iatWS.onmessage = (e) => {
       renderResult(e.data);
